@@ -168,11 +168,12 @@ export const usePermissionStore = defineStore({
         return;
       };
 
+      let backendRouteList = asyncRoutes;
       switch (permissionMode) {
         // 角色权限
         case PermissionModeEnum.ROLE:
           // 对非一级路由进行过滤
-          routes = filter(asyncRoutes, routeFilter);
+          routes = filter(backendRouteList, routeFilter);
           // 对一级路由根据角色权限过滤
           routes = routes.filter(routeFilter);
           // Convert multi-level routing to level 2 routing

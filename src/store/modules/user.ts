@@ -125,12 +125,12 @@ export const useUserStore = defineStore({
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();
-      const { roles = [] } = userInfo;
+      // @ts-ignore
+      const roles = JSON.parse(userInfo.role);
       if (isArray(roles)) {
-        const roleList = roles.map((item) => item.value) as RoleEnum[];
-        this.setRoleList(roleList);
+        this.setRoleList(roles);
       } else {
-        userInfo.roles = [];
+        userInfo.role = [];
         this.setRoleList([]);
       }
       this.setUserInfo(userInfo);
@@ -142,7 +142,8 @@ export const useUserStore = defineStore({
     async logout(goLogin = false) {
       if (this.getToken) {
         try {
-          await doLogout();
+          // await doLogout();
+
         } catch {
           console.log('注销Token失败');
         }
