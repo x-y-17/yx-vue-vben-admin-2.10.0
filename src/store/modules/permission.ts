@@ -23,6 +23,7 @@ import { getPermCode } from '/@/api/sys/user';
 
 import { useMessage } from '/@/hooks/web/useMessage';
 import { PageEnum } from '/@/enums/pageEnum';
+import { ROUTE_MAP } from '/@/router/route-map';
 
 interface PermissionState {
   // Permission code list
@@ -168,7 +169,161 @@ export const usePermissionStore = defineStore({
         return;
       };
 
-      let backendRouteList = asyncRoutes;
+      const wrapperRouteComponent = (routes) => {
+        return routes.map((route) => {
+          if (route.children && route.children.length > 0) {
+            route.children = wrapperRouteComponent(route.children);
+          }
+          route.component = ROUTE_MAP[route.name];
+          return route;
+        });
+      };
+      const paresRouteRoles = (routes) => {
+        return routes.map((route) => {
+          if (route.children && route.children.length > 0) {
+            route.children = paresRouteRoles(route.children);
+          }
+          if (route?.meta?.roles) {
+            try {
+              route.meta.roles = JSON.parse(route.meta.roles);
+            } catch (error) {
+              console.error(error);
+            }
+          }
+          return route;
+        });
+      };
+      const addPageNotFoundAtFirst = (routes) => {
+        routes.unshift(PAGE_NOT_FOUND_ROUTE);
+        return routes;
+      };
+      let backendRouteList = [];
+      try {
+        backendRouteList = JSON.parse(
+          `[
+            {
+              "path": "/about",
+              "name": "About",
+              "redirect": "/about/index",
+              "meta": {
+                "hideChildrenInMenu": true,
+                "icon": "simple-icons:about-dot-me",
+                "title": "routes.dashboard.about",
+                "orderNo": 100000
+              },
+              "children": [
+                {
+                  "path": "index",
+                  "name": "AboutPage",
+                  "meta": {
+                    "title": "routes.dashboard.about",
+                    "icon": "simple-icons:about-dot-me",
+                    "hideMenu": true
+                  }
+                }
+              ]
+            },
+            {
+              "path": "/charts",
+              "name": "Charts",
+              "redirect": "/charts/echarts/map",
+              "meta": {
+                "orderNo": 500,
+                "icon": "ion:bar-chart-outline",
+                "title": "routes.demo.charts.charts"
+              },
+              "children": [
+                {
+                  "path": "baiduMap",
+                  "name": "BaiduMap",
+                  "meta": {
+                    "title": "routes.demo.charts.baiduMap"
+                  }
+                },
+                {
+                  "path": "aMap",
+                  "name": "AMap",
+                  "meta": {
+                    "title": "routes.demo.charts.aMap"
+                  }
+                },
+                {
+                  "path": "googleMap",
+                  "name": "GoogleMap",
+                  "meta": {
+                    "title": "routes.demo.charts.googleMap"
+                  }
+                },
+                {
+                  "path": "echarts",
+                  "name": "Echarts",
+                  "meta": {
+                    "title": "Echarts"
+                  },
+                  "redirect": "/charts/echarts/map",
+                  "children": [
+                    {
+                      "path": "map",
+                      "name": "Map",
+                      "meta": {
+                        "title": "routes.demo.charts.map"
+                      }
+                    },
+                    {
+                      "path": "line",
+                      "name": "Line",
+                      "meta": {
+                        "title": "routes.demo.charts.line"
+                      }
+                    },
+                    {
+                      "path": "pie",
+                      "name": "Pie",
+                      "meta": {
+                        "title": "routes.demo.charts.pie"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "path": "/dashboard",
+              "name": "Dashboard",
+              "redirect": "/dashboard/analysis",
+              "meta": {
+                "orderNo": 10,
+                "icon": "ion:grid-outline",
+                "title": "routes.dashboard.dashboard"
+              },
+              "children": [
+                {
+                  "path": "analysis",
+                  "name": "Analysis",
+                  "meta": {
+                    "title": "routes.dashboard.analysis"
+                  }
+                },
+                {
+                  "path": "workbench",
+                  "name": "Workbench",
+                  "meta": {
+                    "title": "routes.dashboard.workbench",
+                    "roles": "[\\"test\\"]"
+                  }
+                }
+              ]
+            }
+          ]`,
+        );
+        backendRouteList = wrapperRouteComponent(backendRouteList);
+        backendRouteList = paresRouteRoles(backendRouteList);
+        backendRouteList = addPageNotFoundAtFirst(backendRouteList);
+        console.log('🚀 ~ buildRoutesAction ~ backendRouteList:', backendRouteList);
+        console.log('🚀 ~ asyncRoutes:', asyncRoutes);
+      } catch (e) {
+        console.error(e);
+      }
       switch (permissionMode) {
         // 角色权限
         case PermissionModeEnum.ROLE:
@@ -184,7 +339,7 @@ export const usePermissionStore = defineStore({
         // 路由映射， 默认进入该case
         case PermissionModeEnum.ROUTE_MAPPING:
           // 对非一级路由进行过滤
-          routes = filter(asyncRoutes, routeFilter);
+          routes = filter(backendRouteList, routeFilter);
           // 对一级路由再次根据角色权限过滤
           routes = routes.filter(routeFilter);
           // 将路由转换成菜单
