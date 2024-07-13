@@ -198,8 +198,36 @@ export const usePermissionStore = defineStore({
         return routes;
       };
       let backendRouteList = [];
+      const convertMenuTree = (menuList) => {
+        const menus = [];
+        menuList.forEach((menu) => {
+          if (menu.meta) {
+            try {
+              menu.meta = JSON.parse(menu.meta);
+            } catch (e) {
+              console.log(e);
+            }
+          }
+          // 顶级目录
+          if (menu.pid === 0) {
+            menus.push(menu);
+            if (!menu.children) {
+              menu.children = [];
+            }
+          } else {
+            const parentMenu = menuList.find((m) => m.id === menu.pid);
+            if (!parentMenu.children) {
+              parentMenu.children = [];
+            }
+            parentMenu.children.push(menu);
+          }
+        });
+        return menus;
+      };
       const getAllMenuData = () => {
-        return getAllMenu();
+        return getAllMenu().then((menu) => {
+          return convertMenuTree(menu);
+        });
       };
       try {
         // backendRouteList = JSON.parse(
@@ -319,12 +347,11 @@ export const usePermissionStore = defineStore({
         //     }
         //   ]`,
         // );
-        backendRouteList = JSON.parse(await getAllMenuData());
+        backendRouteList = await getAllMenuData();
         backendRouteList = wrapperRouteComponent(backendRouteList);
         backendRouteList = paresRouteRoles(backendRouteList);
         backendRouteList = addPageNotFoundAtFirst(backendRouteList);
         console.log('🚀 ~ buildRoutesAction ~ backendRouteList:', backendRouteList);
-        console.log('🚀 ~ asyncRoutes:', asyncRoutes);
       } catch (e) {
         console.error(e);
       }
