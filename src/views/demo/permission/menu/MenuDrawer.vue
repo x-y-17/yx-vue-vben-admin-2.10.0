@@ -17,6 +17,7 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
 
   import { getMenuList } from '/@/api/demo/system';
+  import { createMenu } from '/@/api/sys/menu';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -57,6 +58,15 @@
           setDrawerProps({ confirmLoading: true });
           // TODO custom api
           console.log(values);
+          if (values.parentMenu) {
+            values.pid = values.parentMenu;
+          } else {
+            values.pid = 0;
+          }
+          values.status = +values.status;
+          delete values.parentMenu;
+          const res = await createMenu({ data: values });
+          console.log('🚀 ~ handleSubmit ~ res:', values, '--', res);
           closeDrawer();
           emit('success');
         } finally {
