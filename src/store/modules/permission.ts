@@ -216,7 +216,7 @@ export const usePermissionStore = defineStore({
             }
           } else {
             const parentMenu = menuList.find((m) => m.id === menu.pid);
-            if (!parentMenu.children) {
+            if (parentMenu && !parentMenu.children) {
               parentMenu.children = [];
             }
             parentMenu.children.push(menu);

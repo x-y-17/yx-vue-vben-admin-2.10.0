@@ -77,6 +77,7 @@
       }
 
       function handleEdit(record: Recordable) {
+        record.active = record.active + '';
         openDrawer(true, {
           record,
           isUpdate: true,

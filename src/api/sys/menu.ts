@@ -5,6 +5,7 @@ enum Api {
   GetMenuList = '/getMenuList',
   GetAllMenu = '/menu/active',
   CreateMenu = '/menu',
+  UpdateMenu = '/menu',
 }
 
 /**
@@ -21,4 +22,8 @@ export const getActiveMenu = () => {
 
 export const createMenu = (data) => {
   return defHttp.post({ url: Api.CreateMenu, data });
+};
+
+export const updateMenu = (data) => {
+  return defHttp.put({ url: Api.UpdateMenu, data });
 };
