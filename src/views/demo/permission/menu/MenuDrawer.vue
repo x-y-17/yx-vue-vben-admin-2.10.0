@@ -18,6 +18,7 @@
 
   import { getMenuList } from '/@/api/demo/system';
   import { createMenu, updateMenu } from '/@/api/sys/menu';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'MenuDrawer',
@@ -26,7 +27,7 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
       let menuList = [];
-
+      const { createMessage } = useMessage();
       const [registerForm, { resetFields, setFieldsValue, updateSchema, validate }] = useForm({
         labelWidth: 100,
         schemas: formSchema,
@@ -54,6 +55,21 @@
 
       const getTitle = computed(() => (!unref(isUpdate) ? '新增菜单' : '编辑菜单'));
 
+      function checkAllChildrenMenuDisabeld(updateMenu) {
+        let isAllClosed = true;
+        const id = updateMenu.id;
+        // 子菜单
+        const submenu = menuList.filter((item) => item.pid === id);
+        if (!submenu || submenu.length === 0) {
+          return true;
+        }
+        isAllClosed = submenu.every((menu) => +menu.active === 0);
+        if (isAllClosed) {
+          isAllClosed = checkAllChildrenMenuDisabeld(submenu);
+        }
+        return isAllClosed;
+      }
+
       async function handleSubmit() {
         try {
           const values = await validate();
@@ -73,7 +89,11 @@
           if (isUpdateForm) {
             const menu = menuList.find((item) => values.name === item.name);
             values.id = (menu && menu.id) || '';
-            res = await updateMenu({ data: values });
+            if (checkAllChildrenMenuDisabeld(menu)) {
+              res = await updateMenu({ data: values });
+            } else {
+              createMessage.error('请禁用该菜单下的所有子菜单再关闭该菜单！');
+            }
           } else {
             res = await createMenu({ data: values });
           }
