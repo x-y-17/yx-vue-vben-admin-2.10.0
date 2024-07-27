@@ -352,6 +352,7 @@ export const usePermissionStore = defineStore({
         backendRouteList = paresRouteRoles(backendRouteList);
         backendRouteList = addPageNotFoundAtFirst(backendRouteList);
         console.log('🚀 ~ buildRoutesAction ~ backendRouteList:', backendRouteList);
+        // backendRouteList = asyncRoutes;
       } catch (e) {
         console.error(e);
       }
