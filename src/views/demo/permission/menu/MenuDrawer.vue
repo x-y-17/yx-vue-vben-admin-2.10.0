@@ -90,12 +90,22 @@
             const menu = menuList.find((item) => values.name === item.name);
             values.id = (menu && menu.id) || '';
             if (checkAllChildrenMenuDisabeld(menu)) {
-              res = await updateMenu({ data: values });
+              try {
+                res = await updateMenu({ data: values });
+                createMessage.success('更新菜单成功');
+              } catch (e) {
+                createMessage.error('更新菜单失败', e);
+              }
             } else {
               createMessage.error('请禁用该菜单下的所有子菜单再关闭该菜单！');
             }
           } else {
-            res = await createMenu({ data: values });
+            try {
+              await createMenu({ data: values });
+              createMessage.success('创建菜单成功');
+            } catch (e) {
+              createMessage.error('创建菜单失败', e);
+            }
           }
           console.log('🚀 ~ handleSubmit ~ res:', values, '--', res);
           closeDrawer();
