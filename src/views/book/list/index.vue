@@ -13,22 +13,22 @@
     <div :class="`${prefixCls}__container`">
       <a-list>
         <template v-for="item in list" :key="item.id">
-          <a-list-item>
+          <a-list-item :class="`${prefixCls}__custom-item-style`">
+            <template #extra>
+              <a :href="`https://www.youbaobao.xyz/book/res/img/${item.cover}`" target="_blank">
+                <img
+                  :class="`${prefixCls}__cover`"
+                  alt="logo"
+                  :src="`https://www.youbaobao.xyz/book/res/img/${item.cover}`"
+                />
+              </a>
+            </template>
             <a-list-item-meta>
               <template #description>
                 <div :class="`${prefixCls}__action`">
                   <template v-for="action in actions" :key="action.icon">
-                    <div :class="`${prefixCls}__action-item`">
-                      <Icon
-                        v-if="action.icon"
-                        :class="`${prefixCls}__action-icon`"
-                        :icon="action.icon"
-                        :color="action.color"
-                      />
-                      {{ action.text }}
-                    </div>
+                    <span :class="`${prefixCls}__time`">{{ item.time }}</span>
                   </template>
-                  <span :class="`${prefixCls}__time`">{{ item.time }}</span>
                 </div>
               </template>
               <template #title>
@@ -51,10 +51,10 @@
         </template>
       </a-list>
       <a-pagination
-        v-model:current="current1"
-        v-model:page-size="pageSize1"
-        :total="85"
-        :show-total="(total) => `Total ${total} items`"
+        v-model:current="current"
+        v-model:page-size="pageSize"
+        :total="total"
+        :show-total="(total) => `共计 ${total} 项`"
       />
     </div>
   </PageWrapper>
@@ -67,9 +67,6 @@
   import { actions, searchList, schemas } from './data';
   import { PageWrapper } from '/@/components/Page';
 
-  const handleSearch = (e) => {
-    console.log(e);
-  };
   export default defineComponent({
     components: {
       Icon,
@@ -83,17 +80,32 @@
     },
     setup() {
       const list = ref([]);
-      const current1 = ref<number>(1);
-      const pageSize1 = ref<number>(20);
-      searchList().then((data) => (list.value = data));
+      const title = ref();
+      const author = ref();
+      const total = ref(0);
+      const current = ref(1);
+      const pageSize = ref(20);
+      const handleSearch = (e) => {
+        console.log(e);
+        title.value = e.name ? e.name : null;
+        author.value = e.author ? e.author : null;
+        searchList({ title: title.value, author: author.value }).then(
+          (data) => (list.value = data),
+        );
+      };
+      searchList({}).then((data) => {
+        list.value = data;
+        total.value = data.length;
+      });
       return {
         prefixCls: 'list-search',
         list,
         actions,
         schemas,
         handleSearch,
-        current1,
-        pageSize1,
+        current,
+        pageSize,
+        total,
       };
     },
   });
@@ -111,14 +123,23 @@
       background-color: @component-background;
     }
 
+    &__custom-item-style {
+      align-items: flex-start;
+    }
+
     &__title {
-      margin-bottom: 0px;
+      margin-bottom: 0;
       font-size: 18px;
     }
 
     &__content {
       margin-bottom: 12px;
       color: @text-color-secondary;
+    }
+
+    &__cover {
+      width: 160px;
+      height: 180px;
     }
 
     &__action {
@@ -146,7 +167,7 @@
 
     &__time {
       position: absolute;
-      right: 20px;
+      left: 0;
       color: rgb(0 0 0 / 45%);
     }
   }
