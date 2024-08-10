@@ -4,10 +4,14 @@ import { getBookList } from '/@/api/book/book';
 export const searchList = async (extraParams) => {
   console.log(extraParams);
   const result: any[] = [];
-  const params: any = { page: 1, pageSize: 20 };
+  const params: any = {
+    page: extraParams.page ? extraParams.page : 1,
+    pageSize: extraParams.pageSize ? extraParams.pageSize : 20,
+  };
   if (extraParams.title) params.title = extraParams.title;
   if (extraParams.author) params.author = extraParams.author;
-  const data = await getBookList(params);
+  const { data, count } = await getBookList(params);
+  console.log('🚀 ~ searchList ~ data:', data);
   for (let i = 0; i < data.length; i++) {
     const item = data[i];
     result.push({
@@ -21,7 +25,7 @@ export const searchList = async (extraParams) => {
   }
   console.log('🚀 ~ searchList ~ result:', result);
 
-  return result;
+  return { result, count };
 };
 
 export const actions: any[] = [

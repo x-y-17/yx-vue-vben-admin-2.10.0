@@ -55,13 +55,14 @@
         v-model:page-size="pageSize"
         :total="total"
         :show-total="(total) => `共计 ${total} 项`"
+        @change="onPageChange"
       />
     </div>
   </PageWrapper>
 </template>
 <script lang="ts">
   import { Tag, List, Pagination } from 'ant-design-vue';
-  import { defineComponent, ref } from 'vue';
+  import { defineComponent, ref, unref, computed } from 'vue';
   import Icon from '@/components/Icon/Icon.vue';
   import { BasicForm } from '/@/components/Form/index';
   import { actions, searchList, schemas } from './data';
@@ -85,18 +86,34 @@
       const total = ref(0);
       const current = ref(1);
       const pageSize = ref(20);
+      const searchParams = computed(() => {
+        return {
+          title: unref(title),
+          author: unref(author),
+          page: unref(current),
+          pageSize: unref(pageSize),
+        };
+      });
       const handleSearch = (e) => {
         console.log(e);
         title.value = e.name ? e.name : null;
         author.value = e.author ? e.author : null;
-        searchList({ title: title.value, author: author.value }).then(
-          (data) => (list.value = data),
-        );
+        handleSearchList(unref(searchParams));
       };
-      searchList({}).then((data) => {
-        list.value = data;
-        total.value = data.length;
-      });
+      const handleSearchList = (params = {}) => {
+        searchList(params).then(({ result, count }) => {
+          list.value = result;
+          total.value = count;
+        });
+      };
+
+      const onPageChange = (page, pagesize) => {
+        current.value = +page;
+        pageSize.value = +pagesize;
+        handleSearchList(unref(searchParams));
+      };
+
+      handleSearchList();
       return {
         prefixCls: 'list-search',
         list,
@@ -106,6 +123,7 @@
         current,
         pageSize,
         total,
+        onPageChange,
       };
     },
   });
