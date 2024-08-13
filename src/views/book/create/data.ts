@@ -144,7 +144,7 @@ export const taskSchemas: FormSchema[] = [
     label: '电子书',
     required: true,
     componentProps: {
-      maxSize: 5,
+      maxSize: 10,
       maxNumber: 1,
       accept: ['epub'],
       api: (data) => {
