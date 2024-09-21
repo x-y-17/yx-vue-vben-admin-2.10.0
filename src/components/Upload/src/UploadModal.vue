@@ -247,12 +247,16 @@
         if (isUploadingRef.value) {
           return createMessage.warning(t('component.upload.saveWarn'));
         }
-        const fileList: string[] = [];
+        const fileList: (string | Object)[] = [];
 
         for (const item of fileListRef.value) {
           const { status, responseData } = item;
           if (status === UploadResultStatus.SUCCESS && responseData) {
-            fileList.push(responseData.url);
+            if (responseData.url) {
+              fileList.push(responseData.url);
+            } else {
+              fileList.push(responseData.result as Object);
+            }
           }
         }
         // 存在一个上传成功的即可保存

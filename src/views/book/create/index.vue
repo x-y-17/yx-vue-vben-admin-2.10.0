@@ -29,7 +29,7 @@
     setup() {
       const tableRef = ref<{ getDataSource: () => any } | null>(null);
 
-      const [register, { validate }] = useForm({
+      const [register, { validate, getFieldsValue, setFieldsValue }] = useForm({
         layout: 'vertical',
         baseColProps: {
           span: 6,
@@ -43,7 +43,7 @@
         baseColProps: {
           span: 6,
         },
-        schemas: taskSchemas,
+        schemas: taskSchemas({ getFieldsValue, setFieldsValue }),
         showActionButtonGroup: false,
       });
 
@@ -55,7 +55,9 @@
 
           const [values, taskValues] = await Promise.all([validate(), validateTaskForm()]);
           console.log('form data:', values, taskValues);
-        } catch (error) {}
+        } catch (error) {
+          console.log('error:', error);
+        }
       }
 
       return { register, registerTask, submitAll, tableRef };

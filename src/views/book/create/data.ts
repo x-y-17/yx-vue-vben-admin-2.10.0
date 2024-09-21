@@ -6,7 +6,7 @@ import { getToken } from '/@/utils/auth';
 const basicOptions: LabelValueOptions = [
   {
     label: 'EN',
-    value: 'en',
+    value: 'en-US',
   },
   {
     label: 'CN',
@@ -137,29 +137,84 @@ export const schemas: FormSchema[] = [
     },
   },
 ];
-export const taskSchemas: FormSchema[] = [
-  {
-    field: 'book',
-    component: 'Upload',
-    label: '电子书',
-    required: true,
-    componentProps: {
-      maxSize: 10,
-      maxNumber: 1,
-      accept: ['epub'],
-      api: (data) => {
-        const formData = new FormData();
-        formData.append('file', data.file);
-        const globaleSetting = useGlobSetting();
-        const { apiUrl } = globaleSetting;
-        const requireUrl = `${apiUrl}/book/upload`;
-        return axios.post(requireUrl, formData, {
-          headers: {
-            'Content-Type': data.file.type,
-            Authorization: `Bearer ${getToken()}`,
-          },
-        });
+// export const taskSchemas: FormSchema[] = [
+//   {
+//     field: 'book',
+//     component: 'Upload',
+//     label: '电子书',
+//     required: true,
+//     componentProps: {
+//       maxSize: 10,
+//       maxNumber: 1,
+//       accept: ['epub'],
+//       api: (data) => {
+//         const formData = new FormData();
+//         formData.append('file', data.file);
+//         const globaleSetting = useGlobSetting();
+//         const { apiUrl } = globaleSetting;
+//         const requireUrl = `${apiUrl}/book/upload`;
+//         return axios.post(requireUrl, formData, {
+//           headers: {
+//             'Content-Type': data.file.type,
+//             Authorization: `Bearer ${getToken()}`,
+//           },
+//         });
+//       },
+//       onChange(data) {
+//         console.log('change:', data);
+//       },
+//     },
+//   },
+// ];
+export const taskSchemas = (methods): FormSchema[] => {
+  const { getFieldsValue, setFieldsValue } = methods;
+  return [
+    {
+      field: 'book',
+      component: 'Upload',
+      label: '电子书',
+      required: true,
+      componentProps: {
+        maxSize: 10,
+        maxNumber: 1,
+        accept: ['epub'],
+        api: (data) => {
+          const formData = new FormData();
+          formData.append('file', data.file);
+          const globaleSetting = useGlobSetting();
+          const { apiUrl } = globaleSetting;
+          const requireUrl = `${apiUrl}/book/upload`;
+          return axios.post(requireUrl, formData, {
+            headers: {
+              'Content-Type': data.file.type,
+              Authorization: `Bearer ${getToken()}`,
+            },
+          });
+        },
+        onChange(files) {
+          console.log('change:', files);
+          // 获取解析后的电子书数据
+          if (files.length > 0) {
+            if (!files || files.length < 0) {
+              return;
+            }
+            const [file] = files;
+            const fileData = file.data;
+            if (fileData) {
+              setFieldsValue({
+                title: fileData.title,
+                author: fileData.creator['_'] || fileData.creator,
+                publisher: fileData.publisher,
+                lang: fileData.language,
+                categoryText: fileData.categoryText,
+                fileName: file.originalName,
+                cover: fileData.cover,
+                rootFile: fileData.rootFile,
+              });
+            }
+          }
+        },
       },
     },
-  },
-];
+  ];
+};
