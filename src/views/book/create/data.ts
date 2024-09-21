@@ -167,7 +167,7 @@ export const schemas: FormSchema[] = [
 //   },
 // ];
 export const taskSchemas = (methods): FormSchema[] => {
-  const { getFieldsValue, setFieldsValue } = methods;
+  const { setFieldsValue, contentData } = methods;
   return [
     {
       field: 'book',
@@ -211,6 +211,8 @@ export const taskSchemas = (methods): FormSchema[] => {
                 cover: fileData.cover,
                 rootFile: fileData.rootFile,
               });
+              contentData.value = fileData.content;
+              console.log('🚀 ~ onChange ~ contentData.value :', contentData.value);
             }
           }
         },
