@@ -26,15 +26,14 @@
             <a-list-item-meta>
               <template #description>
                 <div :class="`${prefixCls}__action`">
-                  <template v-for="action in actions" :key="action.icon">
-                    <span :class="`${prefixCls}__time`">{{ item.time }}</span>
-                  </template>
+                  <span :class="`${prefixCls}__time`">{{ item.time }}</span>
+                </div>
+                <div :class="`${prefixCls}__action ${prefixCls}__deleteBtn`">
+                  <a-button type="primary" danger @click="handleDelete(item)">删除</a-button>
                 </div>
               </template>
               <template #title>
-                <p :class="`${prefixCls}__title`">
-                  {{ item.title }}
-                </p>
+                <p :class="`${prefixCls}__title`"> {{ item.title }}({{ item.id }}) </p>
                 <div :class="`${prefixCls}__content`">
                   {{ item.content }}
                 </div>
@@ -61,12 +60,14 @@
   </PageWrapper>
 </template>
 <script lang="ts">
-  import { Tag, List, Pagination } from 'ant-design-vue';
-  import { defineComponent, ref, unref, computed } from 'vue';
+  import { Tag, List, Pagination, Modal } from 'ant-design-vue';
+  import { defineComponent, ref, unref, computed, createVNode } from 'vue';
   import Icon from '@/components/Icon/Icon.vue';
   import { BasicForm } from '/@/components/Form/index';
-  import { actions, searchList, schemas } from './data';
+  import { actions, searchList, schemas, deleteBookById } from './data';
   import { PageWrapper } from '/@/components/Page';
+  import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     components: {
@@ -86,6 +87,7 @@
       const total = ref(0);
       const current = ref(1);
       const pageSize = ref(20);
+      const { createMessage } = useMessage();
       const searchParams = computed(() => {
         return {
           title: unref(title),
@@ -121,6 +123,26 @@
         }
       };
 
+      const handleDelete = (item) => {
+        Modal.confirm({
+          title: '确定删除吗？',
+          icon: createVNode(ExclamationCircleOutlined),
+          content: `确定删除id为${item.id}的图书吗？`,
+          onOk() {
+            deleteBookById({ id: item.id }).then((res) => {
+              if (res.affectedRows === 1) {
+                createMessage.success('删除成功');
+                handleSearchList();
+              }
+            });
+          },
+          onCancel() {
+            console.log('取消');
+          },
+          class: 'test',
+        });
+      };
+
       handleSearchList();
       return {
         prefixCls: 'list-search',
@@ -133,6 +155,7 @@
         total,
         onPageChange,
         wrapperCoverImage,
+        handleDelete,
       };
     },
   });
@@ -173,7 +196,7 @@
       margin-top: 10px;
 
       &-item {
-        display: inline-block;
+        display: block;
         padding: 0 16px;
         color: @text-color-secondary;
 
@@ -191,9 +214,10 @@
         margin-right: 3px;
       }
     }
-
+    &__deleteBtn {
+      margin-top: 10px;
+    }
     &__time {
-      position: absolute;
       left: 0;
       color: rgb(0 0 0 / 45%);
     }

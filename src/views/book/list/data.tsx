@@ -1,5 +1,10 @@
 import { FormSchema } from '/@/components/Form/index';
-import { getBookList } from '/@/api/book/book';
+import { getBookList, deleteBook } from '/@/api/book/book';
+
+export const deleteBookById = async (extraParams) => {
+  console.log('extraParams', extraParams);
+  return await deleteBook(extraParams);
+};
 
 export const searchList = async (extraParams) => {
   console.log(extraParams);
@@ -10,6 +15,7 @@ export const searchList = async (extraParams) => {
   };
   if (extraParams.title) params.title = extraParams.title;
   if (extraParams.author) params.author = extraParams.author;
+  if (extraParams.id) params.id = extraParams.id;
   const { data, count } = await getBookList(params);
   console.log('🚀 ~ searchList ~ data:', data);
   for (let i = 0; i < data.length; i++) {

@@ -11,3 +11,8 @@ enum Api {
 export const getBookList = (params) => {
   return defHttp.get({ url: Api.GetBookList, params });
 };
+
+export const deleteBook = (params) => {
+  console.log('params', params);
+  return defHttp.delete({ url: Api.GetBookList, params });
+};
