@@ -12,6 +12,10 @@ export const getBookList = (params) => {
   return defHttp.get({ url: Api.GetBookList, params });
 };
 
+export const addBook = (data) => {
+  return defHttp.post({ url: Api.GetBookList, data });
+};
+
 export const deleteBook = (params) => {
   console.log('params', params);
   return defHttp.delete({ url: Api.GetBookList, params });

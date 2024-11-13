@@ -23,7 +23,7 @@ export const searchList = async (extraParams) => {
     result.push({
       id: item.id,
       title: item.title,
-      description: [item.category, item.categoryText],
+      description: [item.categoryText, item.language],
       content: item.author,
       time: item.publisher,
       cover: item.cover,

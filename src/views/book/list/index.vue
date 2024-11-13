@@ -116,10 +116,11 @@
       };
 
       const wrapperCoverImage = (cover) => {
+        console.log(cover);
         if (cover.startsWith('/')) {
           return `https://www.youbaobao.xyz/book/res/img${cover}`;
         } else {
-          return `http://localhost:8081/upload/cover/${cover}`;
+          return `http://localhost/upload/cover/${cover}`;
         }
       };
 
@@ -214,9 +215,11 @@
         margin-right: 3px;
       }
     }
+
     &__deleteBtn {
       margin-top: 10px;
     }
+
     &__time {
       left: 0;
       color: rgb(0 0 0 / 45%);

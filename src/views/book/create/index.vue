@@ -20,8 +20,10 @@
   import { defineComponent, ref } from 'vue';
   import PersonTable from './PersonTable.vue';
   import { PageWrapper } from '/@/components/Page';
-  import { schemas, taskSchemas } from './data';
+  import { schemas, taskSchemas, categoryTypeOptions } from './data';
   import { Card } from 'ant-design-vue';
+  import { addBook } from '/@/api/book/book';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'FormHightPage',
@@ -29,7 +31,7 @@
     setup() {
       const tableRef = ref<{ getDataSource: () => any } | null>(null);
       const contentData = ref([]);
-
+      const { createMessage } = useMessage();
       const [register, { validate, getFieldsValue, setFieldsValue }] = useForm({
         layout: 'vertical',
         baseColProps: {
@@ -56,6 +58,33 @@
 
           const [values, taskValues] = await Promise.all([validate(), validateTaskForm()]);
           console.log('form data:', values, taskValues);
+          const {
+            title,
+            author,
+            fileName,
+            cover,
+            lang: language,
+            publisher,
+            rootFile,
+            categoryText,
+          } = values;
+          const category = categoryTypeOptions.find((item) => item.value === categoryText);
+          addBook({
+            title,
+            author,
+            fileName,
+            cover,
+            language,
+            publisher,
+            rootFile,
+            category: categoryText,
+            categoryText: category?.label,
+          }).then((res) => {
+            console.log(res);
+            if (res.affectedRows > 0) {
+              createMessage.success('添加成功');
+            }
+          });
         } catch (error) {
           console.log('error:', error);
         }

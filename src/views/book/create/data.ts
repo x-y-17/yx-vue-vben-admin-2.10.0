@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useGlobSetting } from '/@/hooks/setting';
 import { getToken } from '/@/utils/auth';
 
-const basicOptions: LabelValueOptions = [
+export const basicOptions: LabelValueOptions = [
   {
     label: 'EN',
     value: 'en-US',
@@ -25,7 +25,7 @@ const storeTypeOptions: LabelValueOptions = [
   },
 ];
 
-const categoryTypeOptions: LabelValueOptions = [
+export const categoryTypeOptions: LabelValueOptions = [
   {
     label: 'Biomedicine',
     value: '12',
