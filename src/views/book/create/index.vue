@@ -32,7 +32,7 @@
       const tableRef = ref<{ getDataSource: () => any } | null>(null);
       const contentData = ref([]);
       const { createMessage } = useMessage();
-      const [register, { validate, getFieldsValue, setFieldsValue }] = useForm({
+      const [register, { validate, getFieldsValue, setFieldsValue, resetFields }] = useForm({
         layout: 'vertical',
         baseColProps: {
           span: 6,
@@ -41,7 +41,7 @@
         showActionButtonGroup: false,
       });
 
-      const [registerTask, { validate: validateTaskForm }] = useForm({
+      const [registerTask, { validate: validateTaskForm, resetFields: resetTaskFields }] = useForm({
         layout: 'vertical',
         baseColProps: {
           span: 6,
@@ -69,7 +69,7 @@
             categoryText,
           } = values;
           const category = categoryTypeOptions.find((item) => item.value === categoryText);
-          addBook({
+          const res = await addBook({
             title,
             author,
             fileName,
@@ -79,14 +79,21 @@
             rootFile,
             category: categoryText,
             categoryText: category?.label,
-          }).then((res) => {
-            console.log(res);
-            if (res.affectedRows > 0) {
-              createMessage.success('添加成功');
-            }
           });
+          console.log('add book res:', res);
+          if (res.affectedRows > 0) {
+            createMessage.success('添加成功');
+            await resetFields();
+            await resetTaskFields();
+            contentData.value = [];
+          }
         } catch (error) {
           console.log('error:', error);
+          if (error.message.startsWith('Duplicate entry')) {
+            createMessage.error('电子书重复添加');
+          } else {
+            createMessage.error(error.message);
+          }
         }
       }
 

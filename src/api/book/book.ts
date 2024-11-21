@@ -13,7 +13,7 @@ export const getBookList = (params) => {
 };
 
 export const addBook = (data) => {
-  return defHttp.post({ url: Api.GetBookList, data });
+  return defHttp.post({ url: Api.GetBookList, data }, { errorMessageMode: 'none' });
 };
 
 export const deleteBook = (params) => {
