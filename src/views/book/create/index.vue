@@ -24,6 +24,7 @@
   import { Card } from 'ant-design-vue';
   import { addBook } from '/@/api/book/book';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { addContents, deleteContents } from '@/api/book/menu';
 
   export default defineComponent({
     name: 'FormHightPage',
@@ -81,8 +82,24 @@
             categoryText: category?.label,
           });
           console.log('add book res:', res);
+          for (const content of contentData.value) {
+            const { text, id, playOrder, href } = content;
+            const url = `http://localhost:8081/upload/book/${href}`;
+
+            await addContents({
+              fileName,
+              text: url,
+              id,
+              href,
+              order: playOrder,
+              level: 0,
+              label: text,
+              pid: '',
+              navId: id,
+            });
+          }
           if (res.affectedRows > 0) {
-            createMessage.success('添加成功');
+            createMessage.success('电子书新增成功');
             await resetFields();
             await resetTaskFields();
             contentData.value = [];

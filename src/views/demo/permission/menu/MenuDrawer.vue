@@ -17,7 +17,7 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
 
   import { getMenuList } from '/@/api/demo/system';
-  import { createMenu, updateMenu } from '/@/api/sys/menu';
+  import { createMenu, updateMenu } from '../../../../api/book/menu';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
