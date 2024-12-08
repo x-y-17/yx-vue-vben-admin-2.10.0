@@ -130,7 +130,7 @@
           icon: createVNode(ExclamationCircleOutlined),
           content: `确定删除id为${item.id}的图书吗？`,
           onOk() {
-            deleteBookById({ id: item.id }).then((res) => {
+            deleteBookById({ id: item.id, fileName: item.fileName }).then((res) => {
               if (res.affectedRows === 1) {
                 createMessage.success('删除成功');
                 handleSearchList();

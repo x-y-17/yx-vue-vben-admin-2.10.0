@@ -20,3 +20,7 @@ export const deleteBook = (params) => {
   console.log('params', params);
   return defHttp.delete({ url: Api.GetBookList, params });
 };
+
+export const deleteContents = (fileName) => {
+  return defHttp.delete({ url: '/contents', params: { fileName } });
+};

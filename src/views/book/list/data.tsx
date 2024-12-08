@@ -1,8 +1,9 @@
 import { FormSchema } from '/@/components/Form/index';
-import { getBookList, deleteBook } from '/@/api/book/book';
+import { getBookList, deleteBook, deleteContents } from '/@/api/book/book';
 
 export const deleteBookById = async (extraParams) => {
   console.log('extraParams', extraParams);
+  deleteContents(extraParams.fileName);
   return await deleteBook(extraParams);
 };
 
@@ -27,6 +28,7 @@ export const searchList = async (extraParams) => {
       content: item.author,
       time: item.publisher,
       cover: item.cover,
+      fileName: item.fileName,
     });
   }
   console.log('🚀 ~ searchList ~ result:', result);
