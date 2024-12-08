@@ -29,6 +29,9 @@
                   <span :class="`${prefixCls}__time`">{{ item.time }}</span>
                 </div>
                 <div :class="`${prefixCls}__action ${prefixCls}__deleteBtn`">
+                  <a-button class="edit-btn" type="primary" @click="handleEdit(item)"
+                    >编辑</a-button
+                  >
                   <a-button type="primary" danger @click="handleDelete(item)">删除</a-button>
                 </div>
               </template>
@@ -68,6 +71,7 @@
   import { PageWrapper } from '/@/components/Page';
   import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { useRouter } from 'vue-router';
 
   export default defineComponent({
     components: {
@@ -88,6 +92,7 @@
       const current = ref(1);
       const pageSize = ref(20);
       const { createMessage } = useMessage();
+      const router = useRouter();
       const searchParams = computed(() => {
         return {
           title: unref(title),
@@ -116,7 +121,6 @@
       };
 
       const wrapperCoverImage = (cover) => {
-        console.log(cover);
         if (cover.startsWith('/')) {
           return `https://www.youbaobao.xyz/book/res/img${cover}`;
         } else {
@@ -144,6 +148,16 @@
         });
       };
 
+      const handleEdit = (item) => {
+        const id = item.id;
+        router.push({
+          path: '/book/create',
+          query: {
+            id,
+          },
+        });
+      };
+
       handleSearchList();
       return {
         prefixCls: 'list-search',
@@ -157,6 +171,7 @@
         onPageChange,
         wrapperCoverImage,
         handleDelete,
+        handleEdit,
       };
     },
   });
@@ -218,6 +233,10 @@
 
     &__deleteBtn {
       margin-top: 10px;
+
+      .edit-btn {
+        margin-right: 10px;
+      }
     }
 
     &__time {
