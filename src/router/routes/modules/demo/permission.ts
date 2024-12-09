@@ -23,7 +23,34 @@ const permission: AppRouteModule = {
         title: t('routes.demo.permission.menu'),
         ignoreKeepAlive: true,
       },
-      component: () => import('/@/views/demo/permission/menu/index.vue'),
+      component: () => import('/@/views/permission/menu/index.vue'),
+    },
+    {
+      path: 'role',
+      name: 'PermissionRole',
+      meta: {
+        title: t('routes.demo.permission.role'),
+        ignoreKeepAlive: true,
+      },
+      component: () => import('/@/views/permission/role/index.vue'),
+    },
+    {
+      path: 'user',
+      name: 'PermissionUser',
+      meta: {
+        title: t('routes.demo.permission.user'),
+        ignoreKeepAlive: true,
+      },
+      component: () => import('/@/views/permission/user/index.vue'),
+    },
+    {
+      path: 'permission',
+      name: 'PermissionManagement',
+      meta: {
+        title: t('routes.demo.permission.permission'),
+        ignoreKeepAlive: true,
+      },
+      component: () => import('/@/views/permission/permission/index.vue'),
     },
     {
       path: 'front',
