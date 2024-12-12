@@ -30,14 +30,17 @@ export const columns: BasicColumn[] = [
     dataIndex: 'role',
     width: 200,
     customRender: ({ record }) => {
-      const role = JSON.parse(record.role);
-      return h('div', {}, role.join(','));
+      if (typeof record.role === 'string') {
+        const role = JSON.parse(record.role);
+        return h('div', {}, role.join(','));
+      }
+      return h('div', {}, record.role.join(','));
     },
   },
 
   {
     title: '状态',
-    dataIndex: 'status',
+    dataIndex: 'active',
     width: 120,
     customRender: ({ record }) => {
       if (!Reflect.has(record, 'pendingStatus')) {
@@ -77,7 +80,7 @@ export const searchFormSchema: FormSchema[] = [
     colProps: { span: 6 },
   },
   {
-    field: 'username',
+    field: 'userName',
     label: '用户名',
     component: 'Input',
     colProps: { span: 6 },
@@ -104,6 +107,12 @@ export const formSchema: FormSchema[] = [
     component: 'Input',
   },
   {
+    field: 'password',
+    label: '密码',
+    required: true,
+    component: 'InputPassword',
+  },
+  {
     field: 'nickname',
     label: '昵称',
     required: true,
@@ -114,7 +123,10 @@ export const formSchema: FormSchema[] = [
     label: '头像',
     component: 'Upload',
     componentProps: {
-      action: '/api/upload',
+      maxNumber: 1,
+      api: () => 1,
+      maxSize: 2,
+      accept: ['image/*'],
     },
     required: false,
   },
@@ -122,19 +134,19 @@ export const formSchema: FormSchema[] = [
   {
     field: 'role',
     label: '角色',
-    required: true,
     slot: 'menu',
     component: 'Input',
+    required: false,
   },
   {
-    field: 'status',
+    field: 'active',
     label: '状态',
     component: 'RadioButtonGroup',
-    defaultValue: '0',
+    defaultValue: '1',
     componentProps: {
       options: [
-        { label: '启用', value: '0' },
-        { label: '停用', value: '1' },
+        { label: '启用', value: '1' },
+        { label: '停用', value: '0' },
       ],
     },
   },
