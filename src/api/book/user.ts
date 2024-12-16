@@ -2,6 +2,7 @@ import { defHttp } from '/@/utils/http/axios';
 
 enum Api {
   GetUserList = '/user',
+  Role = '/role',
 }
 
 export const getUserList = (params) => {
@@ -22,4 +23,8 @@ export const addUser = (params) => {
 export const updateUser = (params) => {
   console.log(params);
   return defHttp.put({ url: Api.GetUserList, params });
+};
+
+export const getRoleList = (params) => {
+  return defHttp.get({ url: Api.Role, params });
 };
