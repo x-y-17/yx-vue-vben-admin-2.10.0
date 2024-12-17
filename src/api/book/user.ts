@@ -25,6 +25,6 @@ export const updateUser = (params) => {
   return defHttp.put({ url: Api.GetUserList, params });
 };
 
-export const getRoleList = (params) => {
+export const getRoleList = (params = {}) => {
   return defHttp.get({ url: Api.Role, params });
 };

@@ -12,7 +12,7 @@
         <BasicTree
           v-model:value="model[field]"
           :treeData="treeData"
-          :fieldNames="{ title: 'menuName', key: 'id' }"
+          :fieldNames="{ title: 'name', key: 'id' }"
           checkable
           toolbar
           title="角色列表"
@@ -28,9 +28,8 @@
   import { formSchema } from './user.data';
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
-
-  import { getMenuList } from '/@/api/demo/system';
-  import { addUser, updateUser } from '/@/api/book/user';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { addUser, updateUser, getRoleList } from '/@/api/book/user';
 
   const DEFAULT_AVATAR =
     'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';
@@ -42,11 +41,8 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
       const treeData = ref<TreeItem[]>([]);
-
-      const [
-        registerForm,
-        { resetFields, setFieldsValue, validate, getFieldsValue, updateSchema },
-      ] = useForm({
+      const { createMessage } = useMessage();
+      const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
         labelWidth: 90,
         baseColProps: { span: 24 },
         schemas: formSchema,
@@ -58,14 +54,24 @@
         setDrawerProps({ confirmLoading: false });
         // 需要在setFieldsValue之前先填充treeData，否则Tree组件可能会报key not exist警告
         if (unref(treeData).length === 0) {
-          treeData.value = (await getMenuList()) as any as TreeItem[];
+          treeData.value = (await getRoleList()) as any as TreeItem[];
         }
         isUpdate.value = !!data?.isUpdate;
 
         if (unref(isUpdate)) {
           data.record.active = String(data.record.active);
           data.record.avatar = [data.record.avatar];
-          data.record.role = JSON.parse(data.record.role);
+          // 确保role2始终是数组
+          data.record.role2 = data.record.role
+            ? treeData.value
+                .filter((item) => data.record.role.includes(item.name))
+                .map((item) => item.id)
+            : [];
+          console.log(
+            '🚀 ~ const[registerDrawer,{setDrawerProps,closeDrawer}]=useDrawerInner ~ data.record.role2 :',
+            data.record.role2,
+          );
+
           // 移除schema中的password
           const schemas = formSchema.filter((item) => item.field !== 'password');
           console.log(
@@ -77,6 +83,12 @@
 
           setFieldsValue({
             ...data.record,
+          });
+        } else {
+          // 新增时确保role2有初始值
+          setFieldsValue({
+            role2: [], // 设置空数组作为初始值
+            active: '1',
           });
         }
       });
@@ -94,16 +106,32 @@
           params.password = values.password;
           params.nickname = values.nickname;
           params.avatar = values.avatar || DEFAULT_AVATAR;
-          params.role = values.role || '[]';
+          if (values.role2) {
+            params.role = JSON.stringify(
+              values.role2.map((id) => treeData.value.find((item) => item.id === id)?.name),
+            );
+          } else {
+            params.role = '[]';
+          }
           params.active = values.active || 1;
           const update = unref(isUpdate);
           let res;
           if (update) {
             // 编辑
             res = await updateUser(params);
+            if (res.affectedRows > 0) {
+              createMessage.success('编辑成功');
+            } else {
+              createMessage.error('编辑失败');
+            }
           } else {
             // 新增
             res = await addUser(params);
+            if (res.affectedRows > 0) {
+              createMessage.success('新增成功');
+            } else {
+              createMessage.error('新增失败');
+            }
           }
           closeDrawer();
           emit('success');

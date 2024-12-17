@@ -29,6 +29,7 @@
   import { BasicTree, TreeItem } from '/@/components/Tree';
 
   import { getMenuList } from '/@/api/demo/system';
+  import type { DefineComponent } from 'vue';
 
   export default defineComponent({
     name: 'RoleDrawer',
@@ -84,5 +85,5 @@
         treeData,
       };
     },
-  });
+  }) as DefineComponent;
 </script>

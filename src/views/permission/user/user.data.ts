@@ -1,8 +1,6 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
 import { h } from 'vue';
 import { Switch } from 'ant-design-vue';
-import { setRoleStatus } from '/@/api/demo/system';
-import { useMessage } from '/@/hooks/web/useMessage';
 
 export const columns: BasicColumn[] = [
   {
@@ -132,10 +130,10 @@ export const formSchema: FormSchema[] = [
   },
   // 角色
   {
-    field: 'role',
+    field: 'role2',
     label: '角色',
     slot: 'menu',
-    component: 'Input',
+    component: 'TreeSelect',
     required: false,
   },
   {
