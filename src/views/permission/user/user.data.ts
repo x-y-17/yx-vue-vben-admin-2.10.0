@@ -1,5 +1,5 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
-import { h } from 'vue';
+import { h, unref } from 'vue';
 import { Switch } from 'ant-design-vue';
 
 export const columns: BasicColumn[] = [
@@ -97,55 +97,61 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
-export const formSchema: FormSchema[] = [
-  {
-    field: 'username',
-    label: '用户名',
-    required: true,
-    component: 'Input',
-  },
-  {
-    field: 'password',
-    label: '密码',
-    required: true,
-    component: 'InputPassword',
-  },
-  {
-    field: 'nickname',
-    label: '昵称',
-    required: true,
-    component: 'Input',
-  },
-  {
-    field: 'avatar',
-    label: '头像',
-    component: 'Upload',
-    componentProps: {
-      maxNumber: 1,
-      api: () => 1,
-      maxSize: 2,
-      accept: ['image/*'],
+export const formSchema = (isUpdate): FormSchema[] => {
+  return [
+    {
+      field: 'username',
+      label: '用户名',
+      required: true,
+      component: 'Input',
+      componentProps: {
+        disabled: isUpdate,
+      },
     },
-    required: false,
-  },
-  // 角色
-  {
-    field: 'role2',
-    label: '角色',
-    slot: 'menu',
-    component: 'TreeSelect',
-    required: false,
-  },
-  {
-    field: 'active',
-    label: '状态',
-    component: 'RadioButtonGroup',
-    defaultValue: '1',
-    componentProps: {
-      options: [
-        { label: '启用', value: '1' },
-        { label: '停用', value: '0' },
-      ],
+    {
+      field: 'password',
+      label: '密码',
+      required: true,
+      component: 'InputPassword',
+      ifShow: () => !unref(isUpdate),
     },
-  },
-];
+    {
+      field: 'nickname',
+      label: '昵称',
+      required: true,
+      component: 'Input',
+    },
+    {
+      field: 'avatar',
+      label: '头像',
+      component: 'Upload',
+      componentProps: {
+        maxNumber: 1,
+        api: () => 1,
+        maxSize: 2,
+        accept: ['image/*'],
+      },
+      required: false,
+    },
+    // 角色
+    {
+      field: 'role2',
+      label: '角色',
+      slot: 'menu',
+      component: 'TreeSelect',
+      required: false,
+    },
+    {
+      field: 'active',
+      label: '状态',
+      component: 'RadioButtonGroup',
+      defaultValue: '1',
+      componentProps: {
+        options: [
+          { label: '启用', value: '1' },
+          { label: '停用', value: '0' },
+        ],
+      },
+    },
+  ];
+};

@@ -38,7 +38,8 @@
   import RoleDrawer from './RoleDrawer.vue';
 
   import { columns, searchFormSchema } from './role.data';
-  import { getRoleList } from '/@/api/book/user';
+  import { getRoleList, deleteRole } from '/@/api/book/user';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'RoleManagement',
@@ -65,7 +66,7 @@
           fixed: undefined,
         },
       });
-
+      const { createMessage } = useMessage();
       function handleCreate() {
         openDrawer(true, {
           isUpdate: false,
@@ -79,8 +80,15 @@
         });
       }
 
-      function handleDelete(record: Recordable) {
+      async function handleDelete(record: Recordable) {
         console.log(record);
+        const res = await deleteRole(record);
+        if (res) {
+          createMessage.success('删除成功');
+          reload();
+        } else {
+          createMessage.error('删除失败');
+        }
       }
 
       function handleSuccess() {

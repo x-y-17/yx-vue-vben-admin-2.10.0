@@ -1,5 +1,5 @@
 import { BasicColumn, FormSchema } from '/@/components/Table';
-import { h } from 'vue';
+import { unref } from 'vue';
 import { Switch } from 'ant-design-vue';
 import { setRoleStatus } from '/@/api/demo/system';
 import { useMessage } from '/@/hooks/web/useMessage';
@@ -40,40 +40,29 @@ export const searchFormSchema: FormSchema[] = [
   },
 ];
 
-export const formSchema: FormSchema[] = [
-  {
-    field: 'roleName',
-    label: '角色名称',
-    required: true,
-    component: 'Input',
-  },
-  {
-    field: 'roleValue',
-    label: '角色值',
-    required: true,
-    component: 'Input',
-  },
-  {
-    field: 'status',
-    label: '状态',
-    component: 'RadioButtonGroup',
-    defaultValue: '0',
-    componentProps: {
-      options: [
-        { label: '启用', value: '0' },
-        { label: '停用', value: '1' },
-      ],
+export const formSchema = (isUpdate): FormSchema[] => {
+  return [
+    {
+      field: 'name',
+      label: '角色名称',
+      required: true,
+      component: 'Input',
+      componentProps: {
+        disabled: isUpdate,
+      },
     },
-  },
-  {
-    label: '备注',
-    field: 'remark',
-    component: 'InputTextArea',
-  },
-  {
-    label: ' ',
-    field: 'menu',
-    slot: 'menu',
-    component: 'Input',
-  },
-];
+    {
+      label: '备注',
+      field: 'remark',
+      component: 'InputTextArea',
+    },
+    // 菜单
+    {
+      field: 'menu',
+      label: '菜单',
+      slot: 'menu',
+      component: 'TreeSelect',
+      required: false,
+    },
+  ];
+};

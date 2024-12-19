@@ -30,6 +30,8 @@
 
   import { getMenuList } from '/@/api/demo/system';
   import type { DefineComponent } from 'vue';
+  import { addRole, updateRole } from '/@/api/book/user';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
     name: 'RoleDrawer',
@@ -38,11 +40,11 @@
     setup(_, { emit }) {
       const isUpdate = ref(true);
       const treeData = ref<TreeItem[]>([]);
-
+      const { createMessage } = useMessage();
       const [registerForm, { resetFields, setFieldsValue, validate }] = useForm({
         labelWidth: 90,
         baseColProps: { span: 24 },
-        schemas: formSchema,
+        schemas: formSchema(isUpdate),
         showActionButtonGroup: false,
       });
 
@@ -54,7 +56,7 @@
           treeData.value = (await getMenuList()) as any as TreeItem[];
         }
         isUpdate.value = !!data?.isUpdate;
-
+        console.log('🚀 ~ useDrawerInner ~ isUpdate:', isUpdate.value);
         if (unref(isUpdate)) {
           setFieldsValue({
             ...data.record,
@@ -69,9 +71,24 @@
           const values = await validate();
           setDrawerProps({ confirmLoading: true });
           // TODO custom api
+          let res;
+          let msg = '';
           console.log(values);
-          closeDrawer();
-          emit('success');
+          if (isUpdate.value) {
+            res = await updateRole(values);
+            msg = '编辑成功';
+          } else {
+            res = await addRole(values);
+            msg = '新增成功';
+          }
+          console.log('🚀 ~ handleSubmit ~ res:', res);
+          if (res) {
+            createMessage.success(msg);
+            closeDrawer();
+            emit('success');
+          } else {
+            createMessage.error(msg);
+          }
         } finally {
           setDrawerProps({ confirmLoading: false });
         }

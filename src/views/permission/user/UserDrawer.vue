@@ -45,7 +45,7 @@
       const [registerForm, { resetFields, setFieldsValue, validate, updateSchema }] = useForm({
         labelWidth: 90,
         baseColProps: { span: 24 },
-        schemas: formSchema,
+        schemas: formSchema(isUpdate),
         showActionButtonGroup: false,
       });
 
@@ -73,13 +73,13 @@
           );
 
           // 移除schema中的password
-          const schemas = formSchema.filter((item) => item.field !== 'password');
-          console.log(
-            '🚀 ~ const[registerDrawer,{setDrawerProps,closeDrawer}]=useDrawerInner ~ schemas:',
-            schemas,
-          );
+          // const schemas = formSchema.filter((item) => item.field !== 'password');
+          // console.log(
+          //   '🚀 ~ const[registerDrawer,{setDrawerProps,closeDrawer}]=useDrawerInner ~ schemas:',
+          //   schemas,
+          // );
           // 重新设置schema
-          updateSchema(schemas);
+          // updateSchema(schemas);
 
           setFieldsValue({
             ...data.record,
