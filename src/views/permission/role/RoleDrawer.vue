@@ -12,7 +12,7 @@
         <BasicTree
           v-model:value="model[field]"
           :treeData="treeData"
-          :fieldNames="{ title: 'menuName', key: 'id' }"
+          :fieldNames="{ title: 'name', key: 'id' }"
           checkable
           toolbar
           title="菜单分配"
@@ -28,9 +28,9 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
 
-  import { getMenuList } from '/@/api/demo/system';
   import type { DefineComponent } from 'vue';
-  import { addRole, updateRole } from '/@/api/book/user';
+  import { addRole, updateRole, addRoleMenu, getRoleMenu } from '/@/api/book/user';
+  import { getMenuList } from '/@/api/book/menu';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   export default defineComponent({
@@ -53,11 +53,21 @@
         setDrawerProps({ confirmLoading: false });
         // 需要在setFieldsValue之前先填充treeData，否则Tree组件可能会报key not exist警告
         if (unref(treeData).length === 0) {
-          treeData.value = (await getMenuList()) as any as TreeItem[];
+          const menuList = await getMenuList();
+          treeData.value = menuList as any as TreeItem[];
         }
         isUpdate.value = !!data?.isUpdate;
-        console.log('🚀 ~ useDrawerInner ~ isUpdate:', isUpdate.value);
         if (unref(isUpdate)) {
+          const roleId = data.record.id;
+          const result = await getRoleMenu({ roleId });
+          if (result.length > 0) {
+            const menuIdArr = JSON.parse(result[0].menuId);
+            data.record.menu = menuIdArr;
+          }
+          console.log(
+            '🚀 ~ const[registerDrawer,{setDrawerProps,closeDrawer}]=useDrawerInner ~ roleMenuList:',
+            result,
+          );
           setFieldsValue({
             ...data.record,
           });
@@ -82,6 +92,11 @@
             msg = '新增成功';
           }
           console.log('🚀 ~ handleSubmit ~ res:', res);
+          // 新增角色后，需要提交角色与菜单的关联关系
+          const { id } = res;
+          const { menu = [] } = values;
+          const res2 = await addRoleMenu({ roleId: id, menuId: menu });
+          console.log('🚀 ~ handleSubmit ~ res2:', res2);
           if (res) {
             createMessage.success(msg);
             closeDrawer();
