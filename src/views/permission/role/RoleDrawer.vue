@@ -29,7 +29,7 @@
   import { BasicTree, TreeItem } from '/@/components/Tree';
 
   import type { DefineComponent } from 'vue';
-  import { addRole, updateRole, addRoleMenu, getRoleMenu } from '/@/api/book/user';
+  import { addRole, updateRole, addRoleMenu, getRoleMenu, updateRoleMenu } from '/@/api/book/user';
   import { getMenuList } from '/@/api/book/menu';
   import { useMessage } from '/@/hooks/web/useMessage';
 
@@ -87,16 +87,20 @@
           if (isUpdate.value) {
             res = await updateRole(values);
             msg = '编辑成功';
+            const { id, menu = [] } = values;
+            const res2 = await updateRoleMenu({ roleId: id, menuId: menu });
+            console.log('🚀 ~ handleSubmit ~ res2:', res2);
           } else {
             res = await addRole(values);
             msg = '新增成功';
+            const { id } = res;
+            const { menu = [] } = values;
+            const res2 = await addRoleMenu({ roleId: id, menuId: menu });
+            console.log('🚀 ~ handleSubmit ~ res2:', res2);
           }
           console.log('🚀 ~ handleSubmit ~ res:', res);
           // 新增角色后，需要提交角色与菜单的关联关系
-          const { id } = res;
-          const { menu = [] } = values;
-          const res2 = await addRoleMenu({ roleId: id, menuId: menu });
-          console.log('🚀 ~ handleSubmit ~ res2:', res2);
+
           if (res) {
             createMessage.success(msg);
             closeDrawer();

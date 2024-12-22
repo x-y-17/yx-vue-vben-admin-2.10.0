@@ -49,3 +49,11 @@ export const addRoleMenu = (data) => {
 export const getRoleMenu = (params) => {
   return defHttp.get({ url: Api.RoleMenu, params });
 };
+
+export const updateRoleMenu = (params) => {
+  return defHttp.put({ url: Api.RoleMenu, params });
+};
+
+export const deleteRoleMenuByRoleId = (params) => {
+  return defHttp.delete({ url: Api.RoleMenu, params: { roleId: params.roleId } });
+};

@@ -39,6 +39,14 @@ export const searchFormSchema: FormSchema[] = [
 export const formSchema = (isUpdate): FormSchema[] => {
   return [
     {
+      field: 'id',
+      label: '角色ID',
+      component: 'Input',
+      componentProps: {
+        disabled: isUpdate,
+      },
+    },
+    {
       field: 'name',
       label: '角色名称',
       required: true,
