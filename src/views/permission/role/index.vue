@@ -38,8 +38,9 @@
   import RoleDrawer from './RoleDrawer.vue';
 
   import { columns, searchFormSchema } from './role.data';
-  import { getRoleList, deleteRole } from '/@/api/book/user';
+  import { getRoleList, deleteRole } from '/@/api/book/role';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import type { Recordable } from '/#/utils';
 
   export default defineComponent({
     name: 'RoleManagement',

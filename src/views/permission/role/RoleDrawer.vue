@@ -29,7 +29,7 @@
   import { BasicTree, TreeItem } from '/@/components/Tree';
 
   import type { DefineComponent } from 'vue';
-  import { addRole, updateRole, addRoleMenu, getRoleMenu, updateRoleMenu } from '/@/api/book/user';
+  import { addRole, updateRole, addRoleMenu, getRoleMenu, updateRoleMenu } from '/@/api/book/role';
   import { getMenuList } from '/@/api/book/menu';
   import { useMessage } from '/@/hooks/web/useMessage';
 

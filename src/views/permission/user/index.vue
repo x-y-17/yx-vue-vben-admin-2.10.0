@@ -31,19 +31,21 @@
 </template>
 <script lang="ts">
   import { defineComponent } from 'vue';
+  import type { Recordable } from '/#/utils';
 
   import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { getUserList } from '/@/api/book/user';
+  import { getUserList, deleteUser } from '/@/api/book/user';
 
   import { useDrawer } from '/@/components/Drawer';
   import UserDrawer from './UserDrawer.vue';
-
+  import { useMessage } from '/@/hooks/web/useMessage';
   import { columns, searchFormSchema } from './user.data';
 
   export default defineComponent({
     name: 'UserManagement',
     components: { BasicTable, UserDrawer, TableAction },
     setup() {
+      const { createMessage } = useMessage();
       const [registerDrawer, { openDrawer }] = useDrawer();
       const [registerTable, { reload }] = useTable({
         title: '用户列表',
@@ -79,8 +81,14 @@
         });
       }
 
-      function handleDelete(record: Recordable) {
-        console.log(record);
+      async function handleDelete(record: Recordable) {
+        const res = await deleteUser(record);
+        if (res) {
+          createMessage.success('删除成功');
+          reload();
+        } else {
+          createMessage.error('删除失败');
+        }
       }
 
       function handleSuccess() {
