@@ -29,7 +29,8 @@
   import { BasicDrawer, useDrawerInner } from '/@/components/Drawer';
   import { BasicTree, TreeItem } from '/@/components/Tree';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { addUser, updateUser, getRoleList } from '/@/api/book/user';
+  import { addUser, updateUser } from '/@/api/book/user';
+  import { getRoleList } from '/@/api/book/role';
 
   const DEFAULT_AVATAR =
     'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png';

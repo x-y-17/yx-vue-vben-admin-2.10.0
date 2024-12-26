@@ -64,10 +64,6 @@
             const menuIdArr = JSON.parse(result[0].menuId);
             data.record.menu = menuIdArr;
           }
-          console.log(
-            '🚀 ~ const[registerDrawer,{setDrawerProps,closeDrawer}]=useDrawerInner ~ roleMenuList:',
-            result,
-          );
           setFieldsValue({
             ...data.record,
           });
@@ -88,14 +84,14 @@
             res = await updateRole(values);
             msg = '编辑成功';
             const { id, menu = [] } = values;
-            const res2 = await updateRoleMenu({ roleId: id, menuId: menu });
+            const res2 = await updateRoleMenu({ roleId: id, menuId: menu, roleName: values.name });
             console.log('🚀 ~ handleSubmit ~ res2:', res2);
           } else {
             res = await addRole(values);
             msg = '新增成功';
             const { id } = res;
             const { menu = [] } = values;
-            const res2 = await addRoleMenu({ roleId: id, menuId: menu });
+            const res2 = await addRoleMenu({ roleId: id, menuId: menu, roleName: values.name });
             console.log('🚀 ~ handleSubmit ~ res2:', res2);
           }
           console.log('🚀 ~ handleSubmit ~ res:', res);
